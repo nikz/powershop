@@ -13,7 +13,7 @@ First, you'll need a Consumer Key/Secret pair from Powershop. You can obtain one
 Then create a new client like so:
 
 <pre><code>require 'powershop'
-    powershop_client = Powershop::Client.new(YOUR_OAUTH_CONSUMER_KEY, YOUR_OAUTH_CONSUMER_SECRET)
+powershop_client = Powershop::Client.new(YOUR_OAUTH_CONSUMER_KEY, YOUR_OAUTH_CONSUMER_SECRET)
 </code></pre>
 
 You can get a Request Token like this:
@@ -39,14 +39,13 @@ Once they've authenticated at Powershop they'll get redirected to your callback 
 
 You can then get an Access Token/Secret pair.
 
-<pre><code>powershop_client.access_token
-</code></pre>
+<pre><code>powershop_client.access_token</code></pre>
 
 You should store this in your Database or somewhere similarly persistent - you can use it later to authenticate in a single step:
 
 <pre><code>require 'powershop'
-    powershop_client = Powershop::Client.new(YOUR_OAUTH_CONSUMER_KEY, YOUR_OAUTH_CONSUMER_SECRET)
-    powershop_client.authorize_from_access(ACCESS_TOKEN, ACCESS_SECRET)
+powershop_client = Powershop::Client.new(YOUR_OAUTH_CONSUMER_KEY, YOUR_OAUTH_CONSUMER_SECRET)
+powershop_client.authorize_from_access(ACCESS_TOKEN, ACCESS_SECRET)
 </code></pre>
 
 h2. Using the Library
