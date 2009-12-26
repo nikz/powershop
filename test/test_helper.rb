@@ -1,3 +1,6 @@
+require 'rubygems'
 require 'stringio'
 require 'test/unit'
-require File.dirname(__FILE__) + '/../lib/powershop-client'
+require File.dirname(__FILE__) + '/../lib/powershop'
+
+require 'mocha'

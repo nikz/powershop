@@ -1,1 +1,1 @@
-require 'powershop-client'
+require 'powershop'

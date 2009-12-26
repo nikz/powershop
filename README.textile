@@ -1,0 +1,87 @@
+h1. Powershop OAuth Client
+
+This is an Ruby OAuth Client library for the Powershop API (more details available at "Powershop":http://powershop.co.nz or on the "Google Group":http://groups.google.com/group/powershop-developers).
+
+It borrows heavily from John Nunemaker's "Twitter Ruby Client":http://github.com/jnunemaker/twitter. Thanks!
+
+h2. Authenticating With OAuth
+
+(Note that there is an executable example in examples/powershop_example.rb. You can get more detail about OAuth itself at the "OAuth Site":http://oauth.net)
+
+First, you'll need a Consumer Key/Secret pair from Powershop. You can obtain one by contacting developers@powershop.co.nz.
+
+Then create a new client like so:
+
+<pre><code>    
+    require 'powershop'
+    powershop_client = Powershop::Client.new(YOUR_OAUTH_CONSUMER_KEY, YOUR_OAUTH_CONSUMER_SECRET)
+</code></pre>
+
+You can get a Request Token like this:
+
+<pre><code>    
+  request_token = powershop_client.request_token(:oauth_callback => "http://mysite.com/oauth/callback")
+</code></pre>
+
+NB: Powershop requires you specify an OAuth Callback URL for your request token. The library will default to "oob" (Out-Of-Band) if you don't specify a URL. Using "oob" means Powershop will provide your user with a verifier that they must manually copy and paste into your application (useful for Desktop applications or similar). Otherwise, the OAuth Callback URL is a URL your users will get redirected to along with an :oauth_verifier param once they've authenticated at Powershop.
+
+Keep your Request Token/Secret pair around (the session is a good place in Rails) - as you'll need it later. 
+
+You'll then need to redirect your user to the authentication URL for the request token. In Rails, this looks something like:
+
+<pre><code>    
+  redirect_to request_token.authorize_url
+</code></pre>
+
+Once they've authenticated at Powershop they'll get redirected to your callback with a verifier, and you can then exchange your Request Token for an Access Token like so:
+
+<pre><code>    
+  powershop_client.authorize_from_request(request_token.token, request_token.secret, params[:oauth_verifier])
+</code></pre>
+
+(Assuming that params is a hash of GET parameters, similar to Rails)
+
+You can then get an Access Token/Secret pair.
+
+<pre><code>    
+  powershop_client.access_token
+</code></pre>
+
+You should store this in your Database or somewhere similarly persistent - you can use it later to authenticate in a single step:
+
+<pre><code>    
+    require 'powershop'
+    powershop_client = Powershop::Client.new(YOUR_OAUTH_CONSUMER_KEY, YOUR_OAUTH_CONSUMER_SECRET)
+    powershop_client.authorize_from_access(ACCESS_TOKEN, ACCESS_SECRET)
+</code></pre>
+
+h2. Using the Library
+
+Most of the details of the library should be pretty self-explanatory.
+
+<pre><code>  
+  
+  # properties is the result of the "customer_details" API call, it returns an array of Powershop::Property objects
+  powershop_client.properties
+  
+  # you can set the property to use for all subsequent calls (i.e automatically append the icp_number param)
+  powershop_client.set_property(powershop_client.properties.first)
+  
+  # Note that you'll need to set the property for all the following calls
+  
+  # get a list of all products available 
+  powershop_client.products
+  
+  # get some meter readings (the "end_date" parameter defaults to now)
+  powershop_client.meter_readings(:start_date => 2.weeks.ago)
+  
+  # top up power
+  top_up_details = powershop_client.get_top_up
+  
+  # then you should display these details to your user...
+  powershop_client.top_up!(:offer_key => top_up_details.offer_key)
+  
+  # updating meter readings (use a hash of register number => reading pairs)
+  powershop_client.post_meter_readings({ "1000:1" => 40568, "1000:2" => 45638 })
+  
+</code></pre>
