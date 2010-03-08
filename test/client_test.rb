@@ -21,6 +21,20 @@ class ClientTest < Test::Unit::TestCase
     
     @powershop_client.authorize_from_access(ACCESS_TOKEN, ACCESS_SECRET)
     
+  end  
+  
+  def test_test_mode
+    Powershop::Client.test_mode = true      
+    Powershop::OAuth.any_instance.expects(:get).with { |url| url.starts_with?(Powershop::API_TEST_URL) }.returns(stub(:code => 200, :body => test_response("properties")))     
+    
+    @powershop_client.properties.first      
+  end
+  
+  def test_live_mode       
+    Powershop::OAuth.any_instance.expects(:get).with { |url| url.starts_with?(Powershop::API_BASE_URL) }.returns(stub(:code => 200, :body => test_response("properties")))     
+    
+    assert !Powershop::Client.test_mode 
+    @powershop_client.properties.first 
   end
   
   def test_properties
@@ -47,6 +61,16 @@ class ClientTest < Test::Unit::TestCase
       assert_equal "109479:1",        r.register_number
       assert_equal 5,                 r.dials
     end
+  end     
+  
+  def test_current_property
+    if STUB_API_CALLS
+      Powershop::OAuth.any_instance.expects(:get).with { |url| url =~ /customer/ }.returns(stub(:code => 200, :body => test_response("properties")))
+    end
+    
+    @powershop_client.set_property(property = @powershop_client.properties.first)  
+    
+    assert_equal property, @powershop_client.current_property
   end
   
   def test_get_meter_readings

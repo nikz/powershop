@@ -22,6 +22,7 @@ module Powershop
   VERSION   = "0.0.1"
   
   # use test url
-  API_BASE_URL = "https://suppliertest.youdo.co.nz"
+  API_BASE_URL = "https://secure.powershop.co.nz"  
+  API_TEST_URL = "https://suppliertest.youdo.co.nz"
   
 end

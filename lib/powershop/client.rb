@@ -1,12 +1,16 @@
 module Powershop
   class Client
-
-    attr_accessor :oauth
+    
+    class << self
+      attr_accessor :test_mode
+    end
+    
+    attr_accessor :oauth  
+    attr_reader :current_property
     
     def initialize(oauth_consumer_key, oauth_consumer_secret)
-      @oauth = OAuth.new(oauth_consumer_key, oauth_consumer_secret)
-      
-      @current_property = nil
+      @oauth   = OAuth.new(oauth_consumer_key, oauth_consumer_secret)  
+      @current_property = nil    
     end
     
     # so we can oauth straight through the Client
@@ -82,7 +86,7 @@ module Powershop
       # NB: For Powershop, the "js" format (usually reserved for executable Javascript)
       # is used to denote JSON encoding (instead of the more familiar "json")
       def api_url(endpoint)
-        "#{API_BASE_URL}/external_api/v1/#{endpoint}.js"
+        "#{self.class.test_mode ? API_TEST_URL : API_BASE_URL}/external_api/v1/#{endpoint}.js"
       end
       
       def parse(response)
