@@ -1,11 +1,8 @@
 module Powershop
   class Client
     
-    class << self
-      attr_accessor :test_mode
-    end
-    
-    attr_accessor :oauth  
+    attr_accessor :oauth 
+    cattr_accessor :test_mode 
     attr_reader :current_property
     
     def initialize(oauth_consumer_key, oauth_consumer_secret)
